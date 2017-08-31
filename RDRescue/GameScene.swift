@@ -40,6 +40,7 @@ class GameScene: SKScene {
   
   // Scene Nodes
   var car:SKSpriteNode!
+    var landBackground:SKTileMapNode!
 
   override func didMove(to view: SKView) {
     loadSceneNodes()
@@ -52,6 +53,10 @@ class GameScene: SKScene {
       fatalError("Sprite Nodes not loaded")
     }
     self.car = car
+    guard let landBackground = childNode(withName: "landBackground") as? SKTileMapNode else {
+        fatalError("Background node not loaded")
+    }
+    self.landBackground = landBackground
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -66,6 +71,19 @@ class GameScene: SKScene {
   
   
   override func update(_ currentTime: TimeInterval) {
+    let position = car.position
+    let column = landBackground.tileColumnIndex(fromPosition: position)
+    let row = landBackground.tileRowIndex(fromPosition: position)
+    
+    let tile = landBackground.tileDefinition(atColumn: column, row: row)
+    if tile == nil {
+        maxSpeed = waterMaxSpeed
+        print("Water")
+    } else {
+        maxSpeed = landMaxSpeed
+        print("grass")
+    }
+
   }
   
   override func didSimulatePhysics() {
